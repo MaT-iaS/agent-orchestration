@@ -59,23 +59,7 @@ Objetivo: <qué problema resuelve>
 ```
 [EXPLORER → ORCHESTRATOR]
 ---
-Resumen: <breve descripción de hallazgos>
-
-Estructura del proyecto:
-- Tecnologías: [...]
-- Frameworks: [...]
-- Arquitectura: [...]
-
-Archivos relevantes:
-- /ruta/archivo.ts: Propósito, dependencias, exports
-
-Mapa de dependencias: <cómo se relacionan los archivos>
-
-Patrones y convenciones: <estilo de código, nombres, patrones>
-
-[OPIONAL]
-- Puntos de atención: [...]
-- Búsquedas sin resultados: [...]
+Formato: Usa el formato definido en `.agents/agents/explorer.md`
 ```
 
 **Instrucciones**
@@ -237,21 +221,7 @@ Reporte Explorer: <archivos, dependencias, patrones>
 ```
 [CODER → ORCHESTRATOR]
 ---
-Estado: SUCCESS | FAIL
-
-Tareas ejecutadas:
-- TASK-01: COMPLETED | FAILED | SKIPPED
-- TASK-02: ...
-
-Archivos modificados:
-- /ruta/archivo.ts: <descripción del cambio>
-
-Métricas:
-- Creados: N | Modificados: N | Líneas: +X / -Y
-
-[CODER_PRO adicional]
-Análisis: <estrategia, alternativas, decisiones>
-Impacto: <archivos afectados, side effects>
+Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/agents/coder_pro.md` según corresponda
 ```
 
 **Instrucciones**
@@ -281,25 +251,7 @@ Contexto: <frameworks, patrones, convenciones>
 ```
 [REVIEWER → ORCHESTRATOR]
 ---
-Veredicto: APPROVED | REJECTED | NEEDS_IMPROVEMENT
-Resumen: <breve análisis>
-
-Cumplimiento de requerimientos:
-✓ Cumplidos: [...]
-✗ Faltantes: [...]
-~ Parciales: [...]
-
-Issues:
-! Críticos: [...] (bloquea si hay ≥1)
-⚠ Mayores: [...] (bloquea si hay ≥2)
-○ Menores: [...]
-
-Feedback por archivo:
-- /ruta/archivo.ts: OK | ISSUES - <comentarios>
-
-[OPIONAL]
-- Sugerencias: [...]
-- Próximos pasos: [...]
+Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```
 
 **Instrucciones**
