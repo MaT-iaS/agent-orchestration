@@ -195,12 +195,60 @@ Tareas:
 **Dependencias**: -
 ```
 
+### Criterios de complejidad (para evaluar cada tarea)
+
+Cada criterio se puntúa de **1 a 10**
+
+| Criterio | Ponderación | Score 1-3 (bajo) | Score 4-6 (medio) | Score 7-10 (alto) |
+|----------|-------------|-----------|-----------|----------------|
+| **Archivos afectados** | 15% | 1 archivo | 2-3 archivos | 4+ archivos |
+| **Nivel de dependencias** | 15% | 0 nuevas | 1-2 menores (utils, helpers) | 3+ o dependencias mayores (frameworks, APIs) |
+| **Tipo de cambio** | 20% | Visual/puntual (UI, texto, estilos) | Lógica compleja o refactor menor | Arquitectura nueva o refactor mayor |
+| **Riesgo de regresión** | 35% | Bajo (cambio aislado) | Medio (afecta módulos relacionados) | Alto (funcionalidad core/crítica) |
+| **Conocimiento del codebase** | 15% | Área conocida | Múltiples áreas del proyecto | Código legacy/arquitectura compleja |
+
+**Fórmula de cálculo:**
+
+```
+Score = Σ(criterio_score × ponderación)
+```
+
+Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
+
+**Ejemplo 1: Agregar validación JWT al login**
+
+| Criterio | Situación | Banda | Score | Ponderación | Puntos |
+|----------|-----------|-------|-------|-------------|--------|
+| Archivos afectados | 1 nuevo + 1 existente | 4-6 (2 archivos) | 4 | 0.15 | 0.60 |
+| Nivel de dependencias | Usa lib JWT existente, 0 nuevas | 1-3 | 2 | 0.15 | 0.30 |
+| Tipo de cambio | Lógica en función existente | 4-6 | 4 | 0.20 | 0.80 |
+| Riesgo de regresión | Afecta seguridad, módulos relacionados | 7-10 | 7 | 0.35 | 2.45 |
+| Conocimiento del codebase | Área auth conocida | 1-3 | 2 | 0.15 | 0.30 |
+| **Total** | | | | | **4.45 → 4** |
+
+→ **Coder Lite**
+
+**Ejemplo 2: Crear módulo de pagos con API externa**
+
+| Criterio | Situación | Banda | Score | Ponderación | Puntos |
+|----------|-----------|-------|-------|-------------|--------|
+| Archivos afectados | 5+ archivos nuevos | 7-10 | 8 | 0.15 | 1.20 |
+| Nivel de dependencias | API externa + SDK de pagos nuevos | 7-10 | 8 | 0.15 | 1.20 |
+| Tipo de cambio | Arquitectura nueva | 7-10 | 8 | 0.20 | 1.60 |
+| Riesgo de regresión | Funcionalidad core de facturación | 7-10 | 9 | 0.35 | 3.15 |
+| Conocimiento del codebase | Múltiples áreas (front, back, db) | 4-6 | 6 | 0.15 | 0.90 |
+| **Total** | | | | | **8.05 → 8** |
+
+→ **Coder Pro**
+
 ## FASE 4: EJECUCIÓN
 **Objetivo**: Ejecutar el plan con el agente adecuado según complejidad
 
 **Handoff**
 
 > **Selector**: Si complejidad 1-5 → Coder Lite | Si complejidad 6-10 → Coder Pro
+
+Los criterios de complejidad están definidos en la Fase 3: Planificación.
 
 ```
 [ORCHESTRATOR → CODER_LITE]
@@ -367,16 +415,6 @@ Mantén el estado global en este formato al pasar entre agentes:
 - Intentos de revisión: N/3
 - Contexto resumido: [≤1500 tokens]
 ```
-
-## Criterios de complejidad (1-10)
-
-| Criterio | Score 1-3 | Score 4-6 | Score 7-10 |
-|----------|-----------|-----------|------------|
-| Archivos afectados | 1 | 2-3 | 4+ |
-| Dependencias nuevas | 0 | 1-2 | 3+ |
-| Tipo de cambio | Cosmético (UI, texto) | Lógica existente | Arquitectura/API nueva |
-| Test coverage requerido | No | Parcial | Completo |
-| Riesgo de regresión | Bajo | Medio | Alto |
 
 # Configuration
 - Temperatura preferida: 0.2-0.3 (equilibrado entre determinismo y flexibilidad)
