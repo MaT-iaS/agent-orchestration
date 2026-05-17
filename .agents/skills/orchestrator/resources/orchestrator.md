@@ -98,9 +98,10 @@ El plan puede armarse usando una o ambas fuentes:
    - Valores de configuración
    - Pasos concretos (no vagos)
 5. Evalúa complejidad de cada tarea usando la tabla de criterios (ver abajo)
-6. Genera el archivo `plan-<req>-<date>.md`
-7. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
-8. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `question` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
+6. Genera el archivo `plan-<req>-<Guid><date>.md`
+7. **Crea el archivo `progress-<req>-<Guid>-<date>.md`** con la estructura definida abajo (ver "Estructura del progress file")
+8. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
+9. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `question` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
 
 **Estructura del plan**
 ```
@@ -240,6 +241,160 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 | **Total** | | | | | **8.10 → 8** → **Coder Pro** |
 
 
+## Progress File
+
+**Objetivo**: Único archivo que sirve como seguimiento en vivo durante la ejecución y como reporte final al completarse.
+
+**Cuándo actualizar**:
+- **Al crear el plan** (Fase 3): inicializar con la estructura completa + placeholder de reporte
+- **Tras cada tarea COMPLETADA** por el Coder: agregar entrada en Log de Ejecución + alimentar Decisiones/Hallazgos
+- **Tras cada veredicto del Reviewer**: agregar entrada en Log de Ejecución + alimentar Decisiones/Hallazgos
+- **Al cambiar de fase**: actualizar Checkpoint
+- **En Fase 6**: completar las secciones de reporte en la parte superior
+
+**Estructura del progress file**
+```
+# Progress Report - <Nombre del Plan>
+
+> Este archivo se genera en Fase 3, se actualiza durante Fases 4-5, y se completa en Fase 6.
+> Las secciones de REPORTE se completan en Fase 6. Las secciones de LOG se escriben durante Fases 4-5.
+
+--- REPORTE (se completa en Fase 6) ---
+
+## Resumen Ejecutivo
+- **Objetivo**: <qué se implementó>
+- **Estado**: COMPLETADO | COMPLETADO CON OBSERVACIONES | FALLIDO
+- **Tareas totales**: N | Completadas: X | Fallidas: Y | Omitidas: Z
+
+## Información del Requerimiento
+- **Requerimiento original**: <qué solicitó el usuario>
+- **Objetivo del cambio**: <qué problema resuelve>
+
+## Plan Ejecutado
+- **Plan ID**: PLAN_XXX
+- **Complejidad estimada**: <1-10>
+- **Tareas ejecutadas**:
+  - [✓] TASK-01: <título> - <estado>
+  - [✓] TASK-02: <título> - <estado>
+  - [!] TASK-03: <título> - <estado> (fallida, omitida)
+
+## Cambios Realizados
+- **Archivos creados**: N
+- **Archivos modificados**: N
+- **Archivos eliminados**: N
+- **Líneas añadidas**: ~X
+- **Líneas eliminadas**: ~Y
+
+### Archivos Creados
+| Archivo | Propósito |
+|---------|-----------|
+| /ruta/archivo.ts | <descripción> |
+
+### Archivos Modificados
+| Archivo | Cambios |
+|---------|---------|
+| /ruta/archivo.ts | <qué se modificó> |
+
+### Archivos Eliminados (si aplica)
+| Archivo | Razón |
+|---------|-------|
+| /ruta/archivo.ts | <por qué se eliminó> |
+
+## Impacto y Side Effects
+- **Archivos potencialmente afectados**: <lista>
+- **Efectos secundarios identificados**: <lista>
+- **Áreas que requieren atención**: <lista>
+
+## Revisión Final
+- **Veredicto**: APPROVED | NEEDS_IMPROVEMENT | REJECTED
+- **Intentos de revisión totales**: N/3
+- **Feedback aplicado**: <si aplica>
+
+## Estado Final
+<Descripción del estado actual del sistema tras los cambios>
+
+## Recomendaciones (opcional)
+- <recomendación 1>
+- <recomendación 2>
+
+--- LOG DE EJECUCIÓN (se escribe durante Fases 4-5) ---
+
+## Metadata
+- **Plan ID**: PLAN_XXX
+- **Requerimiento**: <descripción corta>
+- **Fecha inicio**: YYYY-MM-DD HH:MM
+- **Fecha última actualización**: YYYY-MM-DD HH:MM
+
+## Checkpoint
+- **Fase actual**: [nombre]
+- **Última tarea procesada**: [id o "ninguna"]
+- **Siguiente tarea**: [id]
+- **Intentos revisión en curso**: N/3
+- **Tareas completadas**: X/Y
+
+## Log de Ejecución
+
+### [TASK-XX] <título> — COMPLETED
+- **Timestamp**: YYYY-MM-DD HH:MM
+- **Agente**: coder_lite | coder_pro
+- **Complejidad**: N
+- **Resultado**: <resumen de lo implementado>
+- **Archivos creados**:
+  - `/ruta/archivo.ts`: <propósito>
+- **Archivos modificados**:
+  - `/ruta/archivo.ts`: <qué se cambió>
+- **Decisiones tomadas**:
+  - <decisión 1>: <justificación>
+- **Hallazgos relevantes**:
+  - <hallazgo 1>
+- **Notas**: <observaciones del coder>
+
+### [TASK-XX] <título> — REVIEW: APPROVED
+- **Timestamp**: YYYY-MM-DD HH:MM
+- **Agente**: reviewer
+- **Veredicto**: APPROVED
+- **Intentos**: 1
+- **Feedback aplicado**: <si hubo feedback en intentos previos>
+- **Notas del reviewer**: <comentarios relevantes>
+
+### [TASK-XX] <título> — REVIEW: NEEDS_IMPROVEMENT
+- **Timestamp**: YYYY-MM-DD HH:MM
+- **Agente**: reviewer
+- **Veredicto**: NEEDS_IMPROVEMENT
+- **Intento**: 2/3
+- **Feedback**:
+  - <punto 1>
+  - <punto 2>
+- **Acción**: Re-asignado a coder_pro con mejoras solicitadas
+
+### [TASK-XX] <título> — REVIEW: REJECTED
+- **Timestamp**: YYYY-MM-DD HH:MM
+- **Agente**: reviewer
+- **Veredicto**: REJECTED
+- **Razón**: <explicación del rechazo>
+- **Acción**: Re-asignado a coder_pro con correcciones
+
+### [TASK-XX] <título> — FAILED
+- **Timestamp**: YYYY-MM-DD HH:MM
+- **Agente**: coder_lite | coder_pro
+- **Razón**: <por qué falló>
+- **Intentos previos**: N
+- **Acción**: <reintentado | omitido | escalado al usuario>
+
+## Decisiones de Diseño
+- **[TASK-XX]**: <decisión> → Justificación: <por qué>
+
+## Hallazgos Relevantes
+- **[TASK-XX]**: <hallazgo que podría afectar otras tareas o el sistema>
+```
+
+**Reglas de escritura**:
+1. Las secciones de **REPORTE** (arriba del separador) se crean como placeholder en Fase 3 y se completan en Fase 6 — son editables
+2. Las secciones de **LOG** (abajo del separador) siguen las reglas: Log de Ejecución es **inmutable** (solo se agregan entradas), **Checkpoint** se sobrescribe siempre con el estado actual
+3. Las secciones **Decisiones de Diseño** y **Hallazgos Relevantes** son de acumulación única — no se borran ni editan, solo se agregan ítems nuevos
+4. Usar timestamps en formato `YYYY-MM-DD HH:MM` (UTC o local, consistente)
+5. Si una tarea tiene múltiples intentos, registrar **cada intento** como entrada separada
+
 ## FASE 4: EJECUCIÓN
 **Objetivo**: Ejecutar el plan con el agente adecuado según complejidad
 
@@ -275,8 +430,16 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
 1. Evalúa complejidad (1-10) usando los criterios definidos abajo
 2. Si 1-5 → `/coder_lite` | Si 6-10 → `/coder_pro`
 3. Espera el reporte del Coder
-4. Si el Coder reporta FAILED, revisa si es reintentable (≤2 intentos previos) antes de re-asignar
-5. Envía el diff al `/reviewer`
+4. **Tras cada tarea completada, escribe en el progress file**:
+   - Timestamp, agente usado, complejidad
+   - Resultado: qué se implementó
+   - Archivos creados y modificados con propósito
+   - Decisiones tomadas con justificación
+   - Hallazgos relevantes
+   - Notas del coder
+   - Actualiza el checkpoint: última tarea procesada, siguiente tarea, tareas completadas
+5. Si el Coder reporta FAILED, registra en el progress file con razón e intentos previos. Revisa si es reintentable (≤2 intentos previos) antes de re-asignar
+6. Envía el diff al `/reviewer`
 
 ## FASE 5: REVISIÓN
 **Objetivo**: Verificar que la implementación cumple el plan
@@ -304,95 +467,43 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 **Instrucciones**
 1. Envía diff + plan al `/reviewer`
 2. Espera veredicto
-3. Si APPROVED → Fase 6
-4. Si NEEDS_IMPROVEMENT → Re-asigna al Coder con mejoras sugeridas (máx 3 intentos)
-5. Si REJECTED → Re-asigna al Coder con correcciones (máx 3 intentos)
+3. **Tras cada veredicto, escribe en el progress file**:
+   - Timestamp, agente (reviewer), veredicto
+   - Número de intento
+   - Feedback (si NEEDS_IMPROVEMENT o REJECTED)
+   - Notas del reviewer
+   - Acción tomada (re-asignado, completado, etc.)
+   - Actualiza el checkpoint: intentos de revisión en curso
+4. Si APPROVED → Fase 6
+5. Si NEEDS_IMPROVEMENT → Re-asigna al Coder con mejoras sugeridas (máx 3 intentos)
+6. Si REJECTED → Re-asigna al Coder con correcciones (máx 3 intentos)
 
-## FASE 6: REPORTE
-**Objetivo**: Resumen final detallado de todos los cambios, decisiones y estado del proceso
+## FASE 6: REPORTE (completar progress file)
+**Objetivo**: Finalizar el progress file agregando las secciones de reporte en la parte superior
 
 **Instrucciones**
-1. Recopila información de todas las fases anteriores (requerimiento, spec si existe, reporte Explorer, plan, reportes del Coder, veredicto del Reviewer)
-2. Genera un reporte estructurado y detallado
-3. Guarda en `reporte-<req>-<date>.md`
-4. Muestra al usuario el reporte generado
-
-**Estructura del reporte**
-```
-# Reporte de Implementación - <Nombre del Plan>
-
-## Resumen Ejecutivo
-- **Objetivo**: <qué se implementó>
-- **Estado**: COMPLETADO | COMPLETADO CON OBSERVACIONES | FALLIDO
-- **Tareas totales**: N | Completadas: X | Fallidas: Y | Omitidas: Z
-
-## Información del Requerimiento
-- **Requerimiento original**: <qué solicitó el usuario>
-- **Objetivo del cambio**: <qué problema resuelve>
-
-## Plan Ejecutado
-- **Plan ID**: PLAN_XXX
-- **Complejidad estimada**: <1-10>
-- **Tareas ejecutadas**:
-  - [✓] TASK-01: <título> - <estado>
-  - [✓] TASK-02: <título> - <estado>
-  - [!] TASK-03: <título> - <estado> (fallida, omitida)
-
-## Cambios Realizados
-
-### Archivos Creados
-| Archivo | Propósito |
-|---------|------------|
-| /ruta/archivo.ts | <descripción> |
-
-### Archivos Modificados
-| Archivo | Cambios |
-|---------|---------|
-| /ruta/archivo.ts | <qué se modificó> |
-
-### Archivos Eliminados (si aplica)
-| Archivo | Razón |
-|---------|--------|
-| /ruta/archivo.ts | <por qué se eliminó> |
-
-## Métricas
-- Archivos creados: N
-- Archivos modificados: N
-- Archivos eliminados: N
-- Líneas añadidas: ~X
-- Líneas eliminadas: ~Y
-
-## Decisiones de Diseño Importantes
-- **Decisión 1**: <descripción> → Justificación: <por qué>
-- **Decisión 2**: <descripción> → Justificación: <por qué>
-
-## Impacto y Side Effects
-- **Archivos potencialmente afectados**: <lista>
-- **Efectos secundarios identificados**: <lista>
-- **Áreas que requieren atención**: <lista>
-
-## Revisión
-- **Veredicto**: APPROVED | NEEDS_IMPROVEMENT | REJECTED
-- **Intentos de revisión**: N/3
-- **Feedback aplicado**: <si aplica>
-
-## Estado Final
-<Descripción del estado actual del sistema tras los cambios>
-
-## Recomendaciones (opcional)
-- <recomendación 1>
-- <recomendación 2>
-```
+1. Recopila información del Log de Ejecución (secciones de LOG del progress file), del plan, y de los reportes de Coder/Reviewer
+2. **Edita las secciones de REPORTE** (arriba del separador `--- LOG DE EJECUCIÓN ---`):
+   - Completa **Resumen Ejecutivo**: objetivo, estado, conteo de tareas
+   - Completa **Información del Requerimiento**
+   - Completa **Plan Ejecutado**: lista de tareas con [✓] o [!]
+   - Completa **Cambios Realizados**: tablas de archivos agregadas desde cada entrada del log
+   - Completa **Impacto y Side Effects**
+   - Completa **Revisión Final**: veredicto global
+   - Completa **Estado Final**: descripción del sistema tras los cambios
+   - Completa **Recomendaciones** (opcional)
+3. Actualiza **Fecha última actualización** en Metadata
+4. Muestra al usuario el progress file generado
 
 **Handoff**
 ```
 [ORCHESTRATOR → USUARIO]
 ---
-Reporte generado: `reporte-<req>-<date>.md`
+Progress file finalizado: `progress-<req>-<Guid>-<date>.md`
 
 Resumen:
 - Estado: COMPLETADO
-- Archivos: N modificados
+- Archivos: N creados, M modificados
 - Decisiones: N importantes
 
 Veredicto final: APPROVED
@@ -402,18 +513,6 @@ Veredicto final: APPROVED
 - **No asumas**: Si falta información del codebase, vuelve a @Explorer.
 - **Tokens**: Resume el contexto al pasar de un agente a otro. No envíes todo el historial, solo el "Estado de la Verdad" actual.
 - **Transparencia**: Usa encabezados claros como `[ORCHESTRATOR -> EXPLORER]` para que el usuario siga el flujo.
-
-## Gestión de estado
-Mantén el estado global en este formato al pasar entre agentes:
-
-```
-[ESTADO ACTUAL]
-- Fase: [nombre]
-- Plan: [id]
-- Tarea en curso: [id]
-- Intentos de revisión: N/3
-- Contexto resumido: [≤1500 tokens]
-```
 
 # Configuration
 - Temperatura preferida: 0.2-0.3 (equilibrado entre determinismo y flexibilidad)
