@@ -99,7 +99,8 @@ El plan puede armarse usando una o ambas fuentes:
    - Pasos concretos (no vagos)
 5. Evalúa complejidad de cada tarea usando la tabla de criterios (ver abajo)
 6. Genera el archivo `plan-<req>-<date>.md`
-7. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario. Cuando el usuario confirme (verbalmente o mediante el archivo modificado), continúa a la siguiente fase.
+7. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
+8. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `question` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
 
 **Estructura del plan**
 ```
@@ -201,10 +202,10 @@ Cada criterio se puntúa de **1 a 10**
 
 | Criterio | Ponderación | Score 1-3 (bajo) | Score 4-6 (medio) | Score 7-10 (alto) |
 |----------|-------------|-----------|-----------|----------------|
-| **Archivos afectados** | 15% | 1 archivo | 2-3 archivos | 4+ archivos |
-| **Nivel de dependencias** | 15% | 0 nuevas | 1-2 menores (utils, helpers) | 3+ o dependencias mayores (frameworks, APIs) |
-| **Tipo de cambio** | 20% | Visual/puntual (UI, texto, estilos) | Lógica compleja o refactor menor | Arquitectura nueva o refactor mayor |
-| **Riesgo de regresión** | 35% | Bajo (cambio aislado) | Medio (afecta módulos relacionados) | Alto (funcionalidad core/crítica) |
+| **Archivos afectados** | 10% | 1 archivo | 2-3 archivos | 4+ archivos |
+| **Nivel de dependencias** | 20% | 0 nuevas | 1-2 menores (utils, helpers) | 3+ o dependencias mayores (frameworks, APIs) |
+| **Tipo de cambio** | 15% | Visual/puntual (UI, texto, estilos) | Lógica compleja o refactor menor | Arquitectura nueva o refactor mayor |
+| **Riesgo de regresión** | 40% | Bajo (cambio aislado) | Medio (afecta módulos relacionados) | Alto (funcionalidad core/crítica) |
 | **Conocimiento del codebase** | 15% | Área conocida | Múltiples áreas del proyecto | Código legacy/arquitectura compleja |
 
 **Fórmula de cálculo:**
@@ -219,27 +220,25 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 | Criterio | Situación | Banda | Score | Ponderación | Puntos |
 |----------|-----------|-------|-------|-------------|--------|
-| Archivos afectados | 1 nuevo + 1 existente | 4-6 (2 archivos) | 4 | 0.15 | 0.60 |
-| Nivel de dependencias | Usa lib JWT existente, 0 nuevas | 1-3 | 2 | 0.15 | 0.30 |
-| Tipo de cambio | Lógica en función existente | 4-6 | 4 | 0.20 | 0.80 |
-| Riesgo de regresión | Afecta seguridad, módulos relacionados | 7-10 | 7 | 0.35 | 2.45 |
+| Archivos afectados | 1 nuevo + 1 existente | 4-6 (2 archivos) | 4 | 0.10 | 0.40 |
+| Nivel de dependencias | Usa lib JWT existente, 0 nuevas | 1-3 | 2 | 0.20 | 0.40 |
+| Tipo de cambio | Lógica en función existente | 4-6 | 4 | 0.15 | 0.60 |
+| Riesgo de regresión | Afecta seguridad, módulos relacionados | 7-10 | 7 | 0.40 | 2.8 |
 | Conocimiento del codebase | Área auth conocida | 1-3 | 2 | 0.15 | 0.30 |
-| **Total** | | | | | **4.45 → 4** |
+| **Total** | | | | | **4.5 → 5** → **Coder Lite** |
 
-→ **Coder Lite**
 
 **Ejemplo 2: Crear módulo de pagos con API externa**
 
 | Criterio | Situación | Banda | Score | Ponderación | Puntos |
 |----------|-----------|-------|-------|-------------|--------|
-| Archivos afectados | 5+ archivos nuevos | 7-10 | 8 | 0.15 | 1.20 |
-| Nivel de dependencias | API externa + SDK de pagos nuevos | 7-10 | 8 | 0.15 | 1.20 |
-| Tipo de cambio | Arquitectura nueva | 7-10 | 8 | 0.20 | 1.60 |
-| Riesgo de regresión | Funcionalidad core de facturación | 7-10 | 9 | 0.35 | 3.15 |
+| Archivos afectados | 5+ archivos nuevos | 7-10 | 8 | 0.10 | 0.8 |
+| Nivel de dependencias | API externa + SDK de pagos nuevos | 7-10 | 8 | 0.20 | 1.60 |
+| Tipo de cambio | Arquitectura nueva | 7-10 | 8 | 0.15 | 1.20 |
+| Riesgo de regresión | Funcionalidad core de facturación | 7-10 | 9 | 0.40 | 3.60 |
 | Conocimiento del codebase | Múltiples áreas (front, back, db) | 4-6 | 6 | 0.15 | 0.90 |
-| **Total** | | | | | **8.05 → 8** |
+| **Total** | | | | | **8.10 → 8** → **Coder Pro** |
 
-→ **Coder Pro**
 
 ## FASE 4: EJECUCIÓN
 **Objetivo**: Ejecutar el plan con el agente adecuado según complejidad
