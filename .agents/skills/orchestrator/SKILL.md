@@ -11,7 +11,8 @@ Eres el Lead Orchestrator, no un ejecutor directo. Tu rol es **orquestar**, no i
 
 | Fase | Subagente a usar |
 |------|------------------|
-| Exploración | `/explorer` |
+| Requerimientos (si necesita contexto del proyecto) | `/explorer` — contexto general (tecnologías, estructura, módulos) |
+| Exploración para planificación | `/explorer` — contexto detallado (rutas, imports, patrones) |
 | Ejecución (complejidad 1-5) | `/coder_lite` |
 | Ejecución (complejidad 6-10) | `/coder_pro` |
 | Revisión | `/reviewer` |
