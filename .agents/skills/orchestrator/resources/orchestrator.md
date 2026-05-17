@@ -38,6 +38,8 @@ cada pregunta debe ayudar a definir temas como:
 
 no todos estos puntos son requeridos ni tampoco te limites a ellos.
 
+2. Guarda los requerimientos definidos en `spec-<req>-<guid>-<date>.md`. Si no se realizaron preguntas, el spec equivale al requerimiento original del usuario.
+
 una vez reunida toda la información sobre el requerimiento continua con la fase de exploración.
 
 ## FASE 2: EXPLORACIÓN
@@ -65,7 +67,7 @@ Formato: Usa el formato definido en `.agents/agents/explorer.md`
 **Instrucciones**
 1. Envía la especificación de requerimientos al sub-agente `/explorer`
 2. Espera el reporte del Explorer
-3. Si el Explorer falla o no encuentra archivos relevantes tras 3 intentos, reporta al usuario lo encontrado y solicita dirección
+3. Si el Explorer falla o no encuentra archivos relevantes, reporta al usuario lo encontrado y solicita dirección
 4. Continúa a fase 3
 
 ---
@@ -80,7 +82,7 @@ El plan puede armarse usando una o ambas fuentes:
 - **Reporte Explorer**: Contexto del codebase encontrado en Fase 2
 
 **Principios del plan**
-- **Bite-coding**: Cada tarea debe poder completarse en 10-15 min. Si una tarea es más grande, divídela.
+- **Bite-coding**: Cada tarea debe ser pequeña y autocontenida. Si una tarea es muy grande, divídela en tareas más pequeñas.
 - **Autocontenido**: Alguien que no conoce el proyecto debe poder ejecutar la tarea solo leyendo el plan. Incluye rutas exactas, nombres de funciones, valores de configuración, etc.
 - **Verificable**: Cada tarea debe tener un output observable que pueda verificarse
 
@@ -88,7 +90,7 @@ El plan puede armarse usando una o ambas fuentes:
 1. **Evalúa qué fuentes están disponibles**:
    - Si el requerimiento del usuario es claro y específico → usar directamente como base
    - Si existe spec formal → usar spec + requerimiento
-   - Siempre enriquecer con el reporte del Explorer para contexto técnico
+   - Enriquecer con el reporte del Explorer para contexto técnico
 2. Crea el plan usando la información disponible (no esperes tener todas las fuentes)
 3. **Divide en tareas bite-sized**: Cada tarea = cambio pequeño y verificable
 4. Para cada tarea, incluye TODO lo necesario para ejecutarla:
@@ -98,10 +100,11 @@ El plan puede armarse usando una o ambas fuentes:
    - Valores de configuración
    - Pasos concretos (no vagos)
 5. Evalúa complejidad de cada tarea usando la tabla de criterios (ver abajo)
-6. Genera el archivo `plan-<req>-<Guid><date>.md`
-7. **Crea el archivo `progress-<req>-<Guid>-<date>.md`** con la estructura definida abajo (ver "Estructura del progress file")
+6. Genera el archivo `plan-<req>-<guid>-<date>.md`
+7. **Crea el archivo `progress-<req>-<guid>-<date>.md`** con la estructura definida en la sección Progress File (ver más abajo)
 8. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
-9. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `question` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
+9. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `questions` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
+10. Si el usuario modificó el archivo de plan, léelo nuevamente para incorporar los cambios antes de continuar.
 
 **Estructura del plan**
 ```
@@ -199,10 +202,10 @@ Tareas:
 
 ### Criterios de complejidad (para evaluar cada tarea)
 
-Cada criterio se puntúa de **1 a 10**
+Cada criterio tiene **3 niveles discretos** de puntuación. Usar siempre el valor exacto indicado:
 
-| Criterio | Ponderación | Score 1-3 (bajo) | Score 4-6 (medio) | Score 7-10 (alto) |
-|----------|-------------|-----------|-----------|----------------|
+| Criterio | Ponderación | 1 punto | 6 puntos | 10 puntos |
+|----------|-------------|---------|----------|----------|
 | **Archivos afectados** | 10% | 1 archivo | 2-3 archivos | 4+ archivos |
 | **Nivel de dependencias** | 20% | 0 nuevas | 1-2 menores (utils, helpers) | 3+ o dependencias mayores (frameworks, APIs) |
 | **Tipo de cambio** | 15% | Visual/puntual (UI, texto, estilos) | Lógica compleja o refactor menor | Arquitectura nueva o refactor mayor |
@@ -212,34 +215,36 @@ Cada criterio se puntúa de **1 a 10**
 **Fórmula de cálculo:**
 
 ```
-Score = Σ(criterio_score × ponderación)
+Score = Σ(puntos_criterio × ponderación)
 ```
 
 Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 **Ejemplo 1: Agregar validación JWT al login**
 
-| Criterio | Situación | Banda | Score | Ponderación | Puntos |
-|----------|-----------|-------|-------|-------------|--------|
-| Archivos afectados | 1 nuevo + 1 existente | 4-6 (2 archivos) | 4 | 0.10 | 0.40 |
-| Nivel de dependencias | Usa lib JWT existente, 0 nuevas | 1-3 | 2 | 0.20 | 0.40 |
-| Tipo de cambio | Lógica en función existente | 4-6 | 4 | 0.15 | 0.60 |
-| Riesgo de regresión | Afecta seguridad, módulos relacionados | 7-10 | 7 | 0.40 | 2.8 |
-| Conocimiento del codebase | Área auth conocida | 1-3 | 2 | 0.15 | 0.30 |
-| **Total** | | | | | **4.5 → 5** → **Coder Lite** |
+| Criterio | Situación | Puntos | Ponderación | Total |
+|----------|-----------|--------|-------------|-------|
+| Archivos afectados | 1 nuevo + 1 existente (2 archivos) | 6 | 0.10 | 0.60 |
+| Nivel de dependencias | Usa lib JWT existente, 0 nuevas | 1 | 0.20 | 0.20 |
+| Tipo de cambio | Lógica en función existente | 6 | 0.15 | 0.9 |
+| Riesgo de regresión | Afecta seguridad, módulos relacionados | 6 | 0.40 | 2.4 |
+| Conocimiento del codebase | Área auth conocida | 1 | 0.15 | 0.15 |
+| **Total** | | | | **4.25 → 4** → **Coder Lite** |
 
 
 **Ejemplo 2: Crear módulo de pagos con API externa**
 
-| Criterio | Situación | Banda | Score | Ponderación | Puntos |
-|----------|-----------|-------|-------|-------------|--------|
-| Archivos afectados | 5+ archivos nuevos | 7-10 | 8 | 0.10 | 0.8 |
-| Nivel de dependencias | API externa + SDK de pagos nuevos | 7-10 | 8 | 0.20 | 1.60 |
-| Tipo de cambio | Arquitectura nueva | 7-10 | 8 | 0.15 | 1.20 |
-| Riesgo de regresión | Funcionalidad core de facturación | 7-10 | 9 | 0.40 | 3.60 |
-| Conocimiento del codebase | Múltiples áreas (front, back, db) | 4-6 | 6 | 0.15 | 0.90 |
-| **Total** | | | | | **8.10 → 8** → **Coder Pro** |
+| Criterio | Situación | Puntos | Ponderación | Total |
+|----------|-----------|--------|-------------|-------|
+| Archivos afectados | 5+ archivos nuevos | 10 | 0.10 | 1 |
+| Nivel de dependencias | API externa + SDK de pagos nuevos | 10 | 0.20 | 2 |
+| Tipo de cambio | Arquitectura nueva | 10 | 0.15 | 1.50 |
+| Riesgo de regresión | Funcionalidad core de facturación | 10 | 0.40 | 4 |
+| Conocimiento del codebase | Múltiples áreas (front, back, db) | 6 | 0.15 | 0.9 |
+| **Total** | | | | **9.40 → 9** → **Coder Pro** |
 
+
+---
 
 ## Progress File
 
@@ -395,6 +400,8 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 4. Usar timestamps en formato `YYYY-MM-DD HH:MM` (UTC o local, consistente)
 5. Si una tarea tiene múltiples intentos, registrar **cada intento** como entrada separada
 
+---
+
 ## FASE 4: EJECUCIÓN
 **Objetivo**: Ejecutar el plan con el agente adecuado según complejidad
 
@@ -409,6 +416,7 @@ Los criterios de complejidad están definidos en la Fase 3: Planificación.
 ---
 Plan: <id, descripción, tareas>
 Contexto: <frameworks, patrones, convenciones>
+Reporte Explorer: <archivos, dependencias, patrones>
 Estado inicial: <archivos y su estado actual>
 ```
 
@@ -438,7 +446,7 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
    - Hallazgos relevantes
    - Notas del coder
    - Actualiza el checkpoint: última tarea procesada, siguiente tarea, tareas completadas
-5. Si el Coder reporta FAILED, registra en el progress file con razón e intentos previos. Revisa si es reintentable (≤2 intentos previos) antes de re-asignar
+5. Si el Coder reporta FAILED, registra en el progress file con razón e intentos previos. Si tiene ≤2 intentos previos para esta tarea, re-asigna al Coder. Si supera 2 intentos, marca la tarea como FALLIDA en el progress file, informa al usuario, y continúa con la siguiente tarea.
 6. Envía el diff al `/reviewer`
 
 ## FASE 5: REVISIÓN
@@ -450,10 +458,10 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
 [ORCHESTRATOR → REVIEWER]
 ---
 Diff: <cambios realizados>
-Plan: <requerimientos originales>
+Tarea: <id> - <requerimientos>
 Contexto: <frameworks, patrones, convenciones>
 
-[OPIONAL]
+[OPTIONAL]
 - Estado esperado: <qué debería pasar>
 - Estado actual: <qué está pasando>
 ```
@@ -465,7 +473,7 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```
 
 **Instrucciones**
-1. Envía diff + plan al `/reviewer`
+1. Envía diff + tarea al `/reviewer`
 2. Espera veredicto
 3. **Tras cada veredicto, escribe en el progress file**:
    - Timestamp, agente (reviewer), veredicto
@@ -474,9 +482,9 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
    - Notas del reviewer
    - Acción tomada (re-asignado, completado, etc.)
    - Actualiza el checkpoint: intentos de revisión en curso
-4. Si APPROVED → Fase 6
-5. Si NEEDS_IMPROVEMENT → Re-asigna al Coder con mejoras sugeridas (máx 3 intentos)
-6. Si REJECTED → Re-asigna al Coder con correcciones (máx 3 intentos)
+4. Si APPROVED: si quedan tareas pendientes en el plan → vuelve a Fase 4 para ejecutar la siguiente tarea. Si no quedan tareas → Fase 6.
+5. Si NEEDS_IMPROVEMENT → Re-asigna al Coder con mejoras sugeridas (máx 3 intentos por tarea)
+6. Si REJECTED → Re-asigna al Coder con correcciones (máx 3 intentos por tarea)
 
 ## FASE 6: REPORTE (completar progress file)
 **Objetivo**: Finalizar el progress file agregando las secciones de reporte en la parte superior
@@ -499,7 +507,7 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```
 [ORCHESTRATOR → USUARIO]
 ---
-Progress file finalizado: `progress-<req>-<Guid>-<date>.md`
+Progress file finalizado: `progress-<req>-<guid>-<date>.md`
 
 Resumen:
 - Estado: COMPLETADO
