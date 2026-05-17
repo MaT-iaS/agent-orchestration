@@ -38,7 +38,7 @@ cada pregunta debe ayudar a definir temas como:
 
 no todos estos puntos son requeridos ni tampoco te limites a ellos.
 
-2. Guarda los requerimientos definidos en `spec-<req>-<guid>-<date>.md`. Si no se realizaron preguntas, el spec equivale al requerimiento original del usuario.
+2. Crea la carpeta `.orchestrator/<req>-<guid>-<date>/` y guarda los requerimientos en `.orchestrator/<req>-<guid>-<date>/spec-<req>-<guid>-<date>.md`. Si no se realizaron preguntas, el spec equivale al requerimiento original del usuario.
 
 una vez reunida toda la información sobre el requerimiento continua con la fase de exploración.
 
@@ -53,7 +53,8 @@ una vez reunida toda la información sobre el requerimiento continua con la fase
 Requerimiento: <qué necesita implementar>
 Objetivo: <qué problema resuelve>
 
-[OPIONAL]
+[OPTIONAL]
+- Áreas de enfoque: ["src/modules/...", "src/shared/..."]  ← Directorios específicos donde buscar primero
 - Áreas a excluir: [...]
 - Tecnologías preferidas: [...]
 ```
@@ -65,12 +66,12 @@ Formato: Usa el formato definido en `.agents/agents/explorer.md`
 ```
 
 **Instrucciones**
-1. Envía la especificación de requerimientos al sub-agente `/explorer`
-2. Espera el reporte del Explorer
-3. Si el Explorer falla o no encuentra archivos relevantes, reporta al usuario lo encontrado y solicita dirección
-4. Continúa a fase 3
+1. **Deriva áreas de enfoque**: Analiza el requerimiento e identifica los módulos/directorios más probables donde buscar. Ej: si el requerimiento es sobre "autenticación con JWT", enfócate en `src/auth/`, `src/middleware/`, `src/services/auth/`.
+2. Envía la especificación de requerimientos + áreas de enfoque al sub-agente `/explorer`
+3. Espera el reporte del Explorer
+4. Si el Explorer falla o no encuentra archivos relevantes reporta al usaurio la situacion y **DETENTE Y ESPERA** hasta tener indicaciones del usuario,
+5. Si hay resultados, continúa a fase 3
 
----
 
 ## FASE 3: PLANIFICACIÓN
 **Objetivo**: Armar plan detallado, autocontenido y ejecutable por cualquier persona
@@ -100,8 +101,8 @@ El plan puede armarse usando una o ambas fuentes:
    - Valores de configuración
    - Pasos concretos (no vagos)
 5. Evalúa complejidad de cada tarea usando la tabla de criterios (ver abajo)
-6. Genera el archivo `plan-<req>-<guid>-<date>.md`
-7. **Crea el archivo `progress-<req>-<guid>-<date>.md`** con la estructura definida en la sección Progress File (ver más abajo)
+6. Genera el archivo `.orchestrator/<req>-<guid>-<date>/plan-<req>-<guid>-<date>.md`
+7. **Crea el archivo `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`** con la estructura definida en la sección Progress File (ver más abajo)
 8. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
 9. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `questions` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
 10. Si el usuario modificó el archivo de plan, léelo nuevamente para incorporar los cambios antes de continuar.
@@ -507,7 +508,7 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```
 [ORCHESTRATOR → USUARIO]
 ---
-Progress file finalizado: `progress-<req>-<guid>-<date>.md`
+Progress file finalizado: `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
 
 Resumen:
 - Estado: COMPLETADO
