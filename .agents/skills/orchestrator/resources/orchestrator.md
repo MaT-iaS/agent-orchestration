@@ -334,6 +334,7 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 ## Checkpoint
 - **Fase actual**: [nombre]
 - **Última tarea procesada**: [id o "ninguna"]
+- **Tareas en proceso**: [id]
 - **Siguiente tarea**: [id]
 - **Intentos revisión en curso**: N/3
 - **Tareas completadas**: X/Y
@@ -396,7 +397,7 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 **Reglas de escritura**:
 1. Las secciones de **REPORTE** (arriba del separador) se crean como placeholder en Fase 3 y se completan en Fase 6 — son editables
-2. Las secciones de **LOG** (abajo del separador) siguen las reglas: Log de Ejecución es **inmutable** (solo se agregan entradas), **Checkpoint** se sobrescribe siempre con el estado actual
+2. Las secciones de **LOG** (abajo del separador) siguen las reglas: **Log de Ejecución**: es **inmutable** (solo se agregan entradas) cada entrada nueva se agrega al final de las ya existentes, **Checkpoint**: se sobrescribe siempre con el estado actual
 3. Las secciones **Decisiones de Diseño** y **Hallazgos Relevantes** son de acumulación única — no se borran ni editan, solo se agregan ítems nuevos
 4. Usar timestamps en formato `YYYY-MM-DD HH:MM` (UTC o local, consistente)
 5. Si una tarea tiene múltiples intentos, registrar **cada intento** como entrada separada
@@ -404,7 +405,7 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 ---
 
 ## FASE 4: EJECUCIÓN
-**Objetivo**: Ejecutar el plan con el agente adecuado según complejidad
+**Objetivo**: Ejecutar el cada tarea del plan con el agente adecuado según complejidad
 
 **Handoff**
 
@@ -436,7 +437,7 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
 ```
 
 **Instrucciones**
-1. Evalúa complejidad (1-10) usando los criterios definidos abajo
+1. identifica la complejidad de la tarea (1-10) informada en el plan
 2. Si 1-5 → `/coder_lite` | Si 6-10 → `/coder_pro`
 3. Espera el reporte del Coder
 4. **Tras cada tarea completada, escribe en el progress file**:
@@ -446,7 +447,7 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
    - Decisiones tomadas con justificación
    - Hallazgos relevantes
    - Notas del coder
-   - Actualiza el checkpoint: última tarea procesada, siguiente tarea, tareas completadas
+   - Actualiza el checkpoint: última tarea procesada, tareas en proceso, siguiente tarea, tareas completadas
 5. Si el Coder reporta FAILED, registra en el progress file con razón e intentos previos. Si tiene ≤2 intentos previos para esta tarea, re-asigna al Coder. Si supera 2 intentos, marca la tarea como FALLIDA en el progress file, informa al usuario, y continúa con la siguiente tarea.
 6. Envía el diff al `/reviewer`
 
