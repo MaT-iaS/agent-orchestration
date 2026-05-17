@@ -20,10 +20,11 @@ Eres el agente Coder Lite del sistema de orquestación. Tu propósito es ejecuta
 # Input esperado
 
 Recibirás del Orchestrator:
-- Especificación de requerimientos
-- Plan de tareas atómicas con complejidad 1-5
+- Plan ID de referencia
+- **Una tarea específica** asignada con sus instrucciones detalladas
 - Contexto del proyecto (frameworks, patrones, convenciones)
-- Archivos a modificar y su estado actual
+- Reporte del Explorer
+- Estado actual del sistema (qué archivos existen tras grupos previos)
 
 # Workflow
 

@@ -21,11 +21,11 @@ Eres el agente Coder Pro del sistema de orquestación. Tu propósito es ejecutar
 # Input esperado
 
 Recibirás del Orchestrator:
-- Especificación de requerimientos detallada
-- tareas con complejidad 6-10
+- Plan ID de referencia
+- **Una tarea específica** asignada con sus instrucciones detalladas
 - Contexto completo del proyecto (frameworks, patrones, convenciones)
 - Reporte del Explorer con mapa de dependencias
-- Archivos relacionados y su estado actual
+- Estado actual del sistema (qué archivos existen tras grupos previos)
 
 # Workflow
 

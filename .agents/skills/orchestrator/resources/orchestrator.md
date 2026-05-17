@@ -101,11 +101,16 @@ El plan puede armarse usando una o ambas fuentes:
    - Valores de configuración
    - Pasos concretos (no vagos)
 5. Evalúa complejidad de cada tarea usando la tabla de criterios (ver abajo)
-6. Genera el archivo `.orchestrator/<req>-<guid>-<date>/plan-<req>-<guid>-<date>.md`
-7. **Crea el archivo `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`** con la estructura definida en la sección Progress File (ver más abajo)
-8. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
-9. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `questions` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
-10. Si el usuario modificó el archivo de plan, léelo nuevamente para incorporar los cambios antes de continuar.
+6. **Define Parallel Groups**: agrupa tareas sin dependencias entre sí para ejecución paralela. Reglas:
+   - Un grupo = tareas que pueden ejecutarse simultáneamente
+   - Dos tareas en el mismo grupo NO deben tener dependencias entre sí
+   - Dos tareas en el mismo grupo NO deben modificar los mismos archivos
+   - Las dependencias solo cruzan de grupos anteriores a posteriores
+7. Genera el archivo `.orchestrator/<req>-<guid>-<date>/plan-<req>-<guid>-<date>.md`
+8. **Crea el archivo `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`** con la estructura definida en la sección Progress File (ver más abajo)
+9. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
+10. **DETENTE Y ESPERA**: No continúes a la siguiente fase automáticamente. Debes esperar a que el usuario confirme explícitamente. Usa la herramienta `questions` para preguntar "¿Confirmas el plan para continuar con la ejecución?" si el usuario no responde. Solo cuando recibas confirmación explícita, continúa a la Fase 4.
+11. Si el usuario modificó el archivo de plan, léelo nuevamente para incorporar los cambios antes de continuar.
 
 **Estructura del plan**
 ```
@@ -114,6 +119,11 @@ Descripción: <qué resuelve>
 Complejidad estimada: <1-10>
 Tareas:
   - <id>: <título>
+
+**Parallel Groups**:
+  - Grupo 1: [TASK-01, TASK-03]   ← tareas que corren en paralelo
+  - Grupo 2: [TASK-02]            ← tarea que depende de Grupo 1
+  - Grupo 3: [TASK-04, TASK-05]   ← tareas que dependen de Grupo 2
 ```
 
 **Estructura de cada tarea**
@@ -153,6 +163,10 @@ Tareas:
   - AUTH-01: UI formulario login
   - AUTH-02: Validación inputs cliente
   - AUTH-03: API login
+
+Parallel Groups:
+  - Grupo 1: [AUTH-01, AUTH-03]   # UI y API no tienen dependencias entre sí
+  - Grupo 2: [AUTH-02]            # Validación depende de AUTH-01 (existe UI)
 
 ### AUTH-01
 - **Tarea**: Crear UI del formulario de login
@@ -253,6 +267,7 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 **Cuándo actualizar**:
 - **Al crear el plan** (Fase 3): inicializar con la estructura completa + placeholder de reporte
+- **Tras cada grupo completado**: actualizar Checkpoint con grupo actual, tareas completadas
 - **Tras cada tarea COMPLETADA** por el Coder: agregar entrada en Log de Ejecución + alimentar Decisiones/Hallazgos
 - **Tras cada veredicto del Reviewer**: agregar entrada en Log de Ejecución + alimentar Decisiones/Hallazgos
 - **Al cambiar de fase**: actualizar Checkpoint
@@ -333,11 +348,12 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 ## Checkpoint
 - **Fase actual**: [nombre]
-- **Última tarea procesada**: [id o "ninguna"]
-- **Tareas en proceso**: [id]
-- **Siguiente tarea**: [id]
-- **Intentos revisión en curso**: N/3
-- **Tareas completadas**: X/Y
+- **Grupo actual**: [id o "ninguno"]
+- **Tareas del grupo**: [id1, id2, ...]
+- **Tareas completadas del grupo**: X/Y
+- **Tareas totales completadas**: X/Y
+- **Tareas en re-trabajo**: [id2 (intento 2/3)]
+- **Tareas fallidas**: [id3]
 
 ## Log de Ejecución
 
@@ -405,7 +421,7 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 ---
 
 ## FASE 4: EJECUCIÓN
-**Objetivo**: Ejecutar el cada tarea del plan con el agente adecuado según complejidad
+**Objetivo**: Ejecutar el plan por grupos paralelos, lanzando coders simultáneamente para tareas sin dependencias
 
 **Handoff**
 
@@ -413,21 +429,26 @@ Redondear al entero más cercano → **1-5 = Coder Lite** | **6-10 = Coder Pro**
 
 Los criterios de complejidad están definidos en la Fase 3: Planificación.
 
+Cada tarea recibe un handoff individual:
+
 ```
 [ORCHESTRATOR → CODER_LITE]
 ---
-Plan: <id, descripción, tareas>
+Plan ID: <id>
+Tarea asignada: <id> - <título>
 Contexto: <frameworks, patrones, convenciones>
 Reporte Explorer: <archivos, dependencias, patrones>
-Estado inicial: <archivos y su estado actual>
+Estado del sistema: <qué existe después de grupos previos>
 ```
 
 ```
 [ORCHESTRATOR → CODER_PRO]
 ---
-Plan: <id, descripción, tareas>
+Plan ID: <id>
+Tarea asignada: <id> - <título> (<descripción>)
 Contexto: <frameworks, patrones, convenciones>
 Reporte Explorer: <archivos, dependencias, patrones>
+Estado del sistema: <qué existe después de grupos previos>
 ```
 
 ```
@@ -437,19 +458,26 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
 ```
 
 **Instrucciones**
-1. identifica la complejidad de la tarea (1-10) informada en el plan
-2. Si 1-5 → `/coder_lite` | Si 6-10 → `/coder_pro`
-3. Espera el reporte del Coder
-4. **Tras cada tarea completada, escribe en el progress file**:
-   - Timestamp, agente usado, complejidad
-   - Resultado: qué se implementó
-   - Archivos creados y modificados con propósito
-   - Decisiones tomadas con justificación
-   - Hallazgos relevantes
-   - Notas del coder
-   - Actualiza el checkpoint: última tarea procesada, tareas en proceso, siguiente tarea, tareas completadas
-5. Si el Coder reporta FAILED, registra en el progress file con razón e intentos previos. Si tiene ≤2 intentos previos para esta tarea, re-asigna al Coder. Si supera 2 intentos, marca la tarea como FALLIDA en el progress file, informa al usuario, y continúa con la siguiente tarea.
-6. Envía el diff al `/reviewer`
+1. Lee los **Parallel Groups** del plan
+2. Para cada grupo EN ORDEN:
+   a. Para cada tarea del grupo:
+      - Identifica su complejidad (1-5 → coder_lite, 6-10 → coder_pro)
+      - Arma handoff individual solo con esa tarea + contexto compartido
+   b. **Lanza TODAS las tareas del grupo en paralelo** usando múltiples invocaciones a subagentes
+   c. Espera a que TODAS terminen
+   d. Una vez todas implementadas, para cada tarea:
+      - Escribe en el progress file: timestamp, agente, resultado, archivos, decisiones
+      - Arma handoff individual para el reviewer con el diff de esa tarea
+   e. **Lanza TODOS los reviews del grupo en paralelo**
+   f. Espera a que TODOS los reviews terminen
+   g. Para cada tarea cuyo veredicto fue NEEDS_IMPROVEMENT o REJECTED:
+      - Re-asigna al coder correspondiente con feedback (máx 3 intentos por tarea)
+      - Re-implementa y re-revisa (en paralelo si hay múltiples tareas en re-trabajo)
+   h. Una vez todas las tareas del grupo tengan APPROVED o hayan agotado intentos:
+      - Actualiza el checkpoint con el grupo completado
+      - Avanza al siguiente grupo
+3. Si un coder reporta FAILED, registra en el progress file con razón e intentos previos. Si tiene ≤2 intentos previos, re-asigna al Coder. Si supera 2 intentos, marca la tarea como FALLIDA. Evalúa si las tareas dependientes en grupos posteriores pueden continuar o deben abortar.
+4. Repite hasta completar todos los grupos. Sin grupos pendientes → Fase 6.
 
 ## FASE 5: REVISIÓN
 **Objetivo**: Verificar que la implementación cumple el plan
@@ -475,18 +503,20 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```
 
 **Instrucciones**
-1. Envía diff + tarea al `/reviewer`
-2. Espera veredicto
-3. **Tras cada veredicto, escribe en el progress file**:
+1. Recibe N diffs + N tareas (un lote completo de un grupo paralelo desde Fase 4)
+2. Para cada tarea del lote, arma handoff individual: "Tarea: <id> - requerimientos" + diff
+3. **Lanza TODOS los reviewers en paralelo** (una invocación por tarea)
+4. Espera a que TODOS terminen
+5. **Tras cada veredicto, escribe en el progress file**:
    - Timestamp, agente (reviewer), veredicto
    - Número de intento
    - Feedback (si NEEDS_IMPROVEMENT o REJECTED)
    - Notas del reviewer
    - Acción tomada (re-asignado, completado, etc.)
-   - Actualiza el checkpoint: intentos de revisión en curso
-4. Si APPROVED: si quedan tareas pendientes en el plan → vuelve a Fase 4 para ejecutar la siguiente tarea. Si no quedan tareas → Fase 6.
-5. Si NEEDS_IMPROVEMENT → Re-asigna al Coder con mejoras sugeridas (máx 3 intentos por tarea)
-6. Si REJECTED → Re-asigna al Coder con correcciones (máx 3 intentos por tarea)
+   - Actualiza el checkpoint: intentos de revisión en curso por tarea
+6. Devuelve al Orchestrator un **reporte consolidado** con veredictos individuales
+7. Si todas las tareas del lote tienen APPROVED → Fase 4 avanza al siguiente grupo
+8. Si alguna tarea tiene NEEDS_IMPROVEMENT o REJECTED → se re-asigna al Coder correspondiente (máx 3 intentos por tarea). Si hay múltiples tareas en re-trabajo, se re-implementan y re-revisan en paralelo.
 
 ## FASE 6: REPORTE (completar progress file)
 **Objetivo**: Finalizar el progress file agregando las secciones de reporte en la parte superior
