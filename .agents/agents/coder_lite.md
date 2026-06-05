@@ -1,8 +1,8 @@
 ---
-name: coder_lite
-description: Ejecutor. Escribe código para tareas simples y rápidas con bajo impacto.
-model: inherit
 schema_version: 1.0
+name: coder_lite
+model: gemini-3-flash
+description: Ejecutor. Escribe código para tareas simples y rápidas con bajo impacto.
 ---
 
 # Role: Coder Lite

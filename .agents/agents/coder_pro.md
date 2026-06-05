@@ -1,8 +1,8 @@
 ---
-name: coder_pro
-description: Ejecutor Pro. Implementa código para tareas complejas con alto impacto.
-model: inherit
 schema_version: 1.0
+name: coder_pro
+model: gemini-3.1-pro
+description: Ejecutor Pro. Implementa código para tareas complejas con alto impacto.
 ---
 
 # Role: Coder Pro

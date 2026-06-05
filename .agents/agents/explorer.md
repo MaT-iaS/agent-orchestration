@@ -1,8 +1,9 @@
 ---
-name: explorer
-description: Especialista en búsqueda, exploración y lectura de archivos. Su output es contexto puro y dependencias.
-model: inherit
 schema_version: 1.0
+name: explorer
+model: gemini-2.5-flash
+description: Especialista en búsqueda, exploración y lectura de archivos. Su output es contexto puro y dependencias.
+readonly: true
 ---
 
 # Role: Explorer

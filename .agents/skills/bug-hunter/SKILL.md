@@ -97,6 +97,11 @@ Basado en el análisis de los archivos y la descripción del error, proponer al 
      1. El archivo `config.json` está mal formateado → Se observó en el log que se genera un error de sintaxis al cargar el archivo.  
      2. El sistema no encuentra la librería `libx` → El error aparece en una llamada a una función que depende de esa librería.  
      3. Hay un problema de permisos en el directorio `/tmp` → El log muestra un error de acceso denegado en ese directorio.
+   - Cada hipótesis debe incluir también un análisis de impacto:
+     - impacto directo sobre el bug reportado
+     - impacto indirecto sobre otros flujos o módulos
+     - posibles regresiones si la hipótesis es correcta
+   - Si propones un plan de acción o un cambio en código para validar una hipótesis, actualiza el `progress` con ese impacto antes de avanzar.
 
 > 📌 **Importante:** No generes hipótesis generales o vagas. Cada una debe estar respaldada por datos del usuario o del análisis realizado.
 
@@ -138,6 +143,15 @@ Esta fase tiene como objetivo validar si una hipótesis que se formuló al inici
 - **Objetivo del plan:**  
   El plan debe ser claro, ejecutable y debe permitir al usuario **verificar directamente** si la hipótesis es verdadera o falsa. No se trata de hacer una gran investigación, sino de probar algo concreto.
 
+- **Impacto obligatorio del plan:**  
+  Antes de presentar el plan al usuario, documenta en el `progress` el impacto esperado de ejecutar esa verificación:
+  - qué comportamiento cambia si la hipótesis es correcta
+  - qué módulos, pantallas, endpoints o flujos podrían verse afectados
+  - qué riesgos de regresión hay en funcionalidades vecinas
+
+- **Condición antes de modificar archivos:**  
+  Antes de ejecutar cualquier cambio técnico, registra el plan propuesto en el archivo `progress`, incluyendo su análisis de impacto, y solicita confirmación explícita del usuario. **No modifiques archivos hasta recibir esa confirmación.**
+
 ---
 
 **Paso 3: Esperar la respuesta del usuario para evaluar el resultado**
@@ -167,6 +181,20 @@ Esta fase tiene como objetivo validar si una hipótesis que se formuló al inici
 - **Importante:**  
   Cada vez que se descarta una hipótesis, se gana un paso más de conocimiento. Esto ayuda a acotar el problema y a enfocar mejor la solución final.
 
+**Paso 5: Obtener aprobación antes de corregir**
+
+- Una vez que una hipótesis quede confirmada, redacta el plan de corrección final en el archivo `progress` y marca su estado como `pending_approval`.
+- Presenta ese plan al usuario de forma clara y concreta.
+- El plan de corrección debe incluir obligatoriamente:
+  - objetivo de la corrección
+  - cambios propuestos
+  - impacto esperado
+  - impacto en otras funcionalidades
+  - riesgos o regresiones potenciales
+  - validaciones recomendadas para confirmar que no se rompió nada
+- **No apliques cambios en código, configuración o archivos hasta que el usuario confirme explícitamente que desea continuar.**
+- Si el usuario pide ajustes al plan, actualiza el `progress` y vuelve a solicitar aprobación.
+
 ---
 ---
 
@@ -178,8 +206,9 @@ el archivo `progress` se genera con la info obtenida al final de FASE 1 con este
 el archivo se debe actualizar en diferentes puntos del proceso siguiendo esta logica
 
 - **FASE 2:** se actualiza la seccion de archivos relevantes encontrados
-- **FASE 3:** se actualiza la seccion de hipotesis
-- **FASE 4:** se actualizan las acciones del plan de accion en cada iteracion, con una descripcion del resultado de la accion ej (analisis de logs, resultados de pruebas, etc), se actualizan tambien la cadena de preguntas que llevaron la causa raiz 
+- **FASE 3:** se actualiza la seccion de hipotesis incluyendo impacto directo, impacto indirecto y riesgos de regresión
+- **FASE 4:** se actualizan las acciones del plan de accion en cada iteracion, con una descripcion del resultado de la accion ej (analisis de logs, resultados de pruebas, etc), se actualizan tambien la cadena de preguntas que llevaron la causa raiz, y se documenta el impacto observado o validado por cada accion
+- **Antes de cualquier corrección técnica:** se registra en `progress` el plan de corrección propuesto con su análisis de impacto y se espera confirmación explícita del usuario.
 
 **Estructura Header:**
 ```markdown
@@ -217,12 +246,16 @@ el archivo se debe actualizar en diferentes puntos del proceso siguiendo esta lo
 1. **Hipótesis 1**  
    - Descripción: <Explicación breve de por qué se cree que ocurre el bug>  
    - Hallazgos: <¿Qué se ha observado o verificado? ¿Qué evidencia hay?>  
+   - Impacto directo: <Qué parte del bug o flujo principal afecta esta hipótesis>  
+   - Impacto indirecto: <Qué otros flujos, módulos o integraciones podrían verse afectados>  
+   - Riesgo de regresión: <Qué podría romperse si se corrige o si la hipótesis es cierta>  
    - Probabilidad: [1-100%] → [Alta / Media / Baja]  
    - Estado: [pending / confirmed / discard]  
    - Plan de acción:  
         [ ] - <Prueba sugerida para confirmar>
         [ ] - <Logs sugeridos para debug>
-        [ ] - <Acción a realizar>  
+        [ ] - <Acción a realizar>
+   - Análisis de impacto del plan: <Qué se espera validar o afectar con estas acciones, y qué áreas deben revisarse>  
         ...
 
 2. **Hipótesis 2**  
@@ -233,16 +266,30 @@ el archivo se debe actualizar en diferentes puntos del proceso siguiendo esta lo
    - Estado: ...  
    - Plan de acción: ...  
 
+## Plan de corrección propuesto
+- **Estado:** `pending_approval` / `approved` / `rejected`
+- **Objetivo:** <Qué se va a corregir y por qué>
+- **Cambios propuestos:** <Lista breve de archivos, módulos o configuraciones a modificar>
+- **Impacto esperado:** <Qué debería mejorar si la corrección es correcta>
+- **Impacto en otras funcionalidades:** <Qué flujos, módulos o integraciones podrían verse afectados positiva o negativamente>
+- **Riesgos / regresiones potenciales:** <Qué se debe vigilar al aplicar el cambio>
+- **Validaciones recomendadas:** <Pruebas mínimas para confirmar que la corrección no rompió otros escenarios>
+- **Confirmación del usuario:** <Pendiente / Aprobado / Rechazado>
+
 ## Plan de corrección (Estructura general)
 1. **Análisis inicial**  
    - Verificar hipótesis  
    - Revisar logs y archivos
 
-2. **Corrección técnica**  
-   - Modificar código / configuración / API  
-   - Aplicar cambios en entorno de desarrollo  
+2. **Aprobación previa**  
+   - Registrar el plan de corrección en `progress`  
+   - Presentar el plan al usuario  
+   - Esperar confirmación explícita antes de editar archivos
 
-3. ... *(se puede extender según necesidad)*  
+3. **Corrección técnica**  
+   - Modificar código / configuración / API  
+   - Aplicar cambios en entorno de desarrollo
+
+4. ... *(se puede extender según necesidad)*  
 
 ```
-

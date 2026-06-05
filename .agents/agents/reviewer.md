@@ -1,8 +1,9 @@
 ---
-name: reviewer
-description: Revisor de código, analiza implementaciones y aprueba o propone mejoras.
-model: inherit
 schema_version: 1.0
+name: reviewer
+model: gpt-5.3-codex[reasoning=medium,fast=false]
+description: Revisor de código, analiza implementaciones y aprueba o propone mejoras.
+readonly: true
 ---
 
 # Role: Reviewer
