@@ -174,7 +174,7 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 ```text
 [ORCHESTRATOR → USUARIO]
 ---
-Progress file finalizado: `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
+Progress file finalizado: `~/.cursor/.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
 
 Resumen:
 - Estado: COMPLETADO
@@ -230,8 +230,8 @@ Cada pregunta debe ayudar a definir temas como:
 
 #### 3. Persistir la especificación
 
-1. Crea la carpeta `.orchestrator/<req>-<guid>-<date>/`.
-2. Guarda los requerimientos en `.orchestrator/<req>-<guid>-<date>/spec-<req>-<guid>-<date>.md`.
+1. Crea la carpeta `~/.cursor/.orchestrator/<req>-<guid>-<date>/`.
+2. Guarda los requerimientos en `~/.cursor/.orchestrator/<req>-<guid>-<date>/spec-<req>-<guid>-<date>.md`.
 3. **SI** no se realizaron preguntas **Y** no se invocó al Explorer, **ENTONCES** el spec equivale al requerimiento original del usuario.
 
 #### 4. Transición
@@ -306,8 +306,8 @@ El plan puede armarse usando estas fuentes (no es obligatorio tener todas):
    - Dos tareas en el mismo grupo **NO** deben tener dependencias entre sí.
    - Dos tareas en el mismo grupo **NO** deben modificar los mismos archivos.
    - Las dependencias solo cruzan de grupos anteriores a posteriores.
-7. Genera el archivo `.orchestrator/<req>-<guid>-<date>/plan-<req>-<guid>-<date>.md`.
-8. Crea el archivo `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md` con la estructura definida en la sección **Progress File**.
+7. Genera el archivo `~/.cursor/.orchestrator/<req>-<guid>-<date>/plan-<req>-<guid>-<date>.md`.
+8. Crea el archivo `~/.cursor/.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md` con la estructura definida en la sección **Progress File**.
 9. **Muestra el plan al usuario** y explica qué contiene. Indica que puede modificar el archivo si lo considera necesario.
 10. **DETENTE Y ESPERA**:
     - **NO** continúes a la siguiente fase automáticamente.
@@ -475,7 +475,7 @@ Redondea al entero más cercano:
 
 **Objetivo**: Único archivo que sirve como seguimiento en vivo durante la ejecución y como reporte final al completarse.
 
-**Ruta**: `.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
+**Ruta**: `~/.cursor/.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
 
 ### Cuándo actualizar
 
