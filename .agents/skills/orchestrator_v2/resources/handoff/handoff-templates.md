@@ -21,8 +21,6 @@ Use these templates exactly when invoking or validating subagents.
 Phase 1 - Exploracion general
 
 ```text
-[ORCHESTRATOR → EXPLORER]
----
 Tipo: EXPLORACIÓN GENERAL
 Requerimiento: <qué pide el usuario>
 Necesito: entender el proyecto a alto nivel para definir los requerimientos
@@ -34,8 +32,6 @@ Buscar: estructura general, tecnologías, frameworks, módulos principales
 Phase 2 - Exploracion detallada
 
 ```text
-[ORCHESTRATOR → EXPLORER]
----
 Tipo: EXPLORACIÓN DETALLADA
 Requerimiento: <especificación del requerimiento>
 Áreas de enfoque: ["src/modules/...", "src/shared/..."]
@@ -62,8 +58,6 @@ Formato: Usa el formato definido en `.agents/agents/explorer.md`
 Phase 4 - Complexity 1-5
 
 ```text
-[ORCHESTRATOR → CODER_LITE]
----
 Plan ID: <id>
 Tarea asignada: <id> - <título>
 Contexto: <frameworks, patrones, convenciones>
@@ -76,8 +70,6 @@ Estado del sistema: <qué existe después de grupos previos>
 Phase 4 - Complexity 6-10
 
 ```text
-[ORCHESTRATOR → CODER_PRO]
----
 Plan ID: <id>
 Tarea asignada: <id> - <título> (<descripción>)
 Contexto: <frameworks, patrones, convenciones>
@@ -100,8 +92,6 @@ Formato: Usa el formato definido en `.agents/agents/coder_lite.md` o `.agents/ag
 Phase 4-5 - Review request
 
 ```text
-[ORCHESTRATOR → REVIEWER]
----
 Diff: <cambios realizados>
 Tarea: <id> - <requerimientos>
 Contexto: <frameworks, patrones, convenciones>
@@ -126,8 +116,6 @@ Formato: Usa el formato definido en `.agents/agents/reviewer.md`
 Phase 6 - Final delivery
 
 ```text
-[ORCHESTRATOR → USUARIO]
----
 Progress file finalizado: `~/.cursor/.orchestrator/<req>-<guid>-<date>/progress-<req>-<guid>-<date>.md`
 
 Resumen:
